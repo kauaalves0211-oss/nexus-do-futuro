@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#010811">
+    <title>IA do Futuro - Painel Interativo</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle, #0d1b2a 0%, #010811 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #e0e1dd;
+        }
+
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background: rgba(13, 27, 42, 0.85);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 180, 216, 0.2);
+            text-align: center;
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #00b4d8;
+            margin-bottom: 5px;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+        }
+
+        .subtitle {
+            color: #90e0ef;
+            margin-bottom: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .grid-numeros {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .btn-numero {
+            background: rgba(0, 119, 182, 0.2);
+            color: #90e0ef;
+            border: 2px solid #0077b6;
+            padding: 18px 0;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: inset 0 0 10px rgba(0, 119, 182, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-numero:hover,
+        .btn-numero.ativo {
+            background: #00b4d8;
+            color: #010811;
+            box-shadow: 0 0 15px #00b4d8;
+            border-color: #00b4d8;
+        }
+
+        .btn-numero:active {
+            transform: scale(0.95);
+        }
+
+        .btn-numero:focus-visible {
+            outline: 3px solid #90e0ef;
+            outline-offset: 4px;
+        }
+
+        .card-resposta {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(1, 8, 17, 0.7);
+            border: 1px solid #00b4d8;
+            border-radius: 12px;
+            text-align: left;
+            display: none;
+            box-shadow: 0 0 20px rgba(0, 180, 216, 0.1);
+            animation: aparecer 0.35s ease;
+        }
+
+        .pergunta-titulo {
+            font-weight: bold;
+            color: #00b4d8;
+            margin-bottom: 15px;
+            font-size: 18px;
+            line-height: 1.5;
+            text-shadow: 0 0 5px rgba(0, 180, 216, 0.3);
+        }
+
+        .resposta-texto {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #e0e1dd;
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 21px;
+            }
+
+            .grid-numeros {
+                gap: 9px;
+            }
+
+            .btn-numero {
+                padding: 15px 0;
+                font-size: 17px;
+            }
+
+            .card-resposta {
+                padding: 18px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🛸 Projeto IA: Nexus do Futuro</h1>
+
+    <p class="subtitle">
+        Eletiva 1º Ano • Selecione um Terminal de Dados
+    </p>
+
+    <div class="grid-numeros" id="botoes">
+        <!-- Botões gerados automaticamente -->
+    </div>
+
+    <div
+        id="card"
+        class="card-resposta"
+        aria-live="polite"
+        aria-atomic="true"
+    >
+        <div id="pergunta" class="pergunta-titulo"></div>
+        <div id="resposta" class="resposta-texto"></div>
+    </div>
+
+</div>
+
+<script>
+"use strict";
+
+// Banco de dados das 15 perguntas e respostas
+const bancoDados = {
+    1: {
+        p: "Como a IA vai ajudar a combater as queimadas na Amazônia?",
+        r: "No futuro, satélites com IA vão vigiar a floresta 24 horas por dia. Se surgir um foco de incêndio, a IA poderá avisar os bombeiros rapidamente, antes que o fogo se espalhe. Ela também poderá identificar áreas de desmatamento analisando imagens e outros dados."
+    },
+
+    2: {
+        p: "Como a IA pode proteger os jovens do vício em redes sociais?",
+        r: "Em vez de criar algoritmos para prender as pessoas na tela, a IA poderá ajudar a identificar hábitos digitais prejudiciais. Ela poderá sugerir pausas, limitar notificações e incentivar atividades fora das telas, além de ajudar a identificar situações de cyberbullying."
+    },
+
+    3: {
+        p: "Quais profissões vão sumir e quais vão surgir para a nossa geração?",
+        r: "Trabalhos muito repetitivos poderão diminuir, como algumas atividades de caixas de mercado e digitadores. Em compensação, poderão surgir novas profissões ligadas à tecnologia, ao meio ambiente e à saúde, como engenheiros de clima, especialistas em robótica e profissionais de inteligência artificial."
+    },
+
+    4: {
+        p: "Como as IAs vão ajudar a acabar com a fome no mundo?",
+        r: "A IA poderá controlar tratores e drones que analisam o solo e as plantações. Ela poderá indicar a quantidade de água e nutrientes necessários para cada área, aumentando a produtividade agrícola e reduzindo o desperdício de recursos."
+    },
+
+    5: {
+        p: "Como os cientistas vão corrigir os preconceitos raciais e de gênero nos algoritmos?",
+        r: "As IAs podem reproduzir preconceitos presentes nos dados usados durante seu treinamento. No futuro, cientistas poderão desenvolver métodos de auditoria, corrigir dados desequilibrados e testar os sistemas para garantir mais igualdade, justiça e respeito."
+    },
+
+    6: {
+        p: "Como os carros autônomos e semáforos inteligentes vão acabar com o trânsito?",
+        r: "Carros autônomos poderão trocar informações entre si e com semáforos inteligentes. Esses sistemas poderão organizar melhor o fluxo de veículos, reduzir congestionamentos e diminuir acidentes. A combinação com veículos elétricos também poderá reduzir a poluição."
+    },
+
+    7: {
+        p: "A sala de aula do futuro terá um tutor robô que ensina no ritmo de cada aluno?",
+        r: "Sim! A escola continuará importante, mas os alunos poderão contar com tutores de IA que adaptam as explicações ao seu ritmo de aprendizagem. Se alguém tiver dificuldade em matemática, por exemplo, a IA poderá ensinar usando jogos, esportes e exemplos práticos."
+    },
+
+    8: {
+        p: "De que forma robôs controlados por IA vão ajudar a despoluir os oceanos e separar o lixo?",
+        r: "Barcos e robôs submarinos poderão utilizar IA para identificar resíduos plásticos e redes de pesca abandonadas. Esses equipamentos poderão ajudar na coleta de lixo e no monitoramento da poluição dos oceanos, contribuindo para a proteção da vida marinha."
+    },
+
+    9: {
+        p: "Como as pessoas mais pobres e isoladas vão conseguir consultas de saúde por IA?",
+        r: "Pessoas que moram longe dos hospitais poderão utilizar ferramentas de IA para receber orientações iniciais de saúde por celular. A tecnologia poderá ajudar a identificar sinais de alerta e recomendar atendimento profissional, mas não substituirá médicos e outros profissionais de saúde."
+    },
+
+    10: {
+        p: "Como a IA vai conseguir identificar e bloquear Fake News e Deepfakes?",
+        r: "A IA poderá analisar imagens, vídeos, áudios e informações de origem para identificar possíveis conteúdos falsos. Sistemas de verificação poderão alertar os usuários antes que uma notícia enganosa se espalhe, embora a confirmação também dependa de fontes confiáveis."
+    },
+
+    11: {
+        p: "Como biólogos vão usar IA para proteger animais ameaçados no Pantanal?",
+        r: "Câmeras e microfones instalados em áreas naturais poderão enviar informações para uma IA. Ela poderá identificar espécies, acompanhar deslocamentos e detectar mudanças no ambiente, ajudando biólogos a proteger animais ameaçados de extinção."
+    },
+
+    12: {
+        p: "Como a IA vai incluir pessoas com deficiência na sociedade e no mercado?",
+        r: "Pessoas cegas poderão utilizar óculos inteligentes que descrevem objetos e obstáculos. Pessoas surdas poderão contar com ferramentas de tradução e legendas automáticas. Próteses inteligentes e tecnologias assistivas também poderão ampliar a autonomia e a acessibilidade."
+    },
+
+    13: {
+        p: "Como a IA vai gerenciar a energia limpa para pararmos de queimar combustíveis fósseis?",
+        r: "A IA poderá administrar redes de energia solar e eólica, prever a produção e organizar o armazenamento em baterias. Também poderá distribuir melhor a eletricidade, reduzir desperdícios e facilitar o uso de fontes renováveis."
+    },
+
+    14: {
+        p: "Se a IA consegue criar desenhos e músicas, a arte humana ainda terá valor?",
+        r: "Com certeza! A IA pode criar desenhos e músicas, mas a arte humana possui experiências, sentimentos e histórias pessoais. A criatividade das pessoas continuará tendo valor, e a inteligência artificial poderá funcionar como uma ferramenta para ampliar as possibilidades artísticas."
+    },
+
+    15: {
+        p: "A IA vai ajudar a diminuir a solidão ou vai afastar ainda mais os amigos?",
+        r: "Esse é um grande desafio. Se for usada de maneira inadequada, a IA poderá diminuir o contato entre as pessoas. Por outro lado, poderá facilitar a comunicação e liberar tempo para atividades importantes. O segredo será utilizar a tecnologia sem substituir as amizades e relações humanas."
+    }
+};
+
+// Elementos da página
+const botoesContainer = document.getElementById("botoes");
+const card = document.getElementById("card");
+const perguntaEl = document.getElementById("pergunta");
+const respostaEl = document.getElementById("resposta");
+
+// Cria automaticamente os 15 botões
+Object.keys(bancoDados).forEach(numero => {
+
+    const botao = document.createElement("button");
+
+    botao.className = "btn-numero";
+    botao.textContent = numero;
+    botao.type = "button";
+    botao.setAttribute("aria-label", `Abrir diretriz ${numero}`);
+
+    botao.addEventListener("click", () => {
+        mostrarPergunta(numero, botao);
+    });
+
+    botoesContainer.appendChild(botao);
+});
+
+// Exibe a pergunta selecionada
+function mostrarPergunta(numero, botaoClicado) {
+
+    const item = bancoDados[numero];
+
+    if (!item) return;
+
+    // Remove a seleção anterior
+    const botoes = botoesContainer.querySelectorAll(".btn-numero");
+
+    botoes.forEach(botao => {
+        botao.classList.remove("ativo");
+        botao.setAttribute("aria-pressed", "false");
+    });
+
+    // Destaca o botão selecionado
+    botaoClicado.classList.add("ativo");
+    botaoClicado.setAttribute("aria-pressed", "true");
+
+    // Atualiza o conteúdo
+    perguntaEl.textContent = `⚡ [SISTEMA] DIRETRIZ ${numero}: ${item.p}`;
+    respostaEl.textContent = item.r;
+
+    // Exibe o painel
+    card.style.display = "block";
+
+    // Rola suavemente até a resposta
+    card.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "auto"
+            : "smooth",
+        block: "nearest"
+    });
+}
+</script>
+
+</body>
+</html>
